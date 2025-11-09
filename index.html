@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decentralized Message Board - NEON SYNTHWAVE v4 (Responsive)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* NEON SYNTHWAVE THEME */
+        :root {
+            --bg-color-dark: #1A0033;
+            --card-bg: #2B2B4A;
+            --text-color-light: #E0E0FF;
+            --primary-neon: #FF0099;
+            --secondary-neon: #00FFFF;
+            --success-color: #66FF66; /* Softer Electric Lime Green */
+            --error-color: #FF4500;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+            background-image: radial-gradient(circle, #2A004A 1px, transparent 1px), radial-gradient(circle, #3A005A 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 95%; /* Make it slightly more flexible on smaller screens */
+            margin: 0 auto 60px;
+            padding: 40px; 
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 0 10px var(--primary-neon), 0 0 20px var(--primary-neon) inset;
+            border: 2px solid var(--primary-neon);
+        }
+
+        h1 { 
+            font-weight: 700; 
+            font-size: 2.8rem;
+            color: var(--secondary-neon);
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 0 0 5px var(--secondary-neon); 
+            border-bottom: 3px solid var(--primary-neon);
+            padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        h2 { 
+            color: var(--primary-neon); 
+            font-weight: 700; 
+            margin-top: 30px; 
+            margin-bottom: 15px; 
+            font-size: 1.4rem;
+            border-bottom: 1px dashed var(--secondary-neon); 
+            padding-bottom: 5px;
+            display: flex; 
+            align-items: center;
+            gap: 10px; 
+            text-shadow: 0 0 3px var(--primary-neon);
+        }
+
+        /* General Card Styling */
+        .section-card {
+            background: rgba(0, 0, 0, 0.4); 
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px var(--secondary-neon) inset;
+            border: 1px solid var(--secondary-neon);
+            margin-bottom: 25px;
+            transition: transform 0.2s;
+        }
+        .section-card:hover {
+            transform: scale(1.01); /* Reduced scale for better feel on a tighter layout */
+            box-shadow: 0 0 10px var(--secondary-neon) inset, 0 0 15px var(--secondary-neon);
+        }
+
+        /* Message Display */
+        #currentMessage {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--success-color); 
+            display: block;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 4px;
+            border: 1px solid var(--success-color);
+            text-shadow: 0 0 3px var(--success-color);
+        }
+        
+        /* Main Content Grid */
+        .main-content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        /* Metrics */
+        .metric {
+            background: linear-gradient(135deg, var(--primary-neon), #FF69B4); 
+            color: var(--bg-color-dark); 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px var(--primary-neon); 
+            margin-bottom: 15px;
+            display: flex; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 120px;
+            transition: all 0.2s;
+        }
+        .metric:hover {
+            transform: translateY(-3px); /* Reduced movement for stability */
+            box-shadow: 0 0 20px var(--primary-neon);
+        }
+        .metric-value {
+            font-size: 2.8rem; 
+            font-weight: 700;
+            color: white; 
+            text-shadow: 0 0 5px var(--bg-color-dark);
+            display: block;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--bg-color-dark);
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        /* Buttons and Inputs - styles remain the same for consistency */
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 3px black;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 0 10px white; }
+
+        #connectButton { background-color: var(--secondary-neon); color: var(--bg-color-dark); box-shadow: 0 0 8px var(--secondary-neon);}
+        #readDataButton { background-color: var(--success-color); color: var(--bg-color-dark); box-shadow: 0 0 8px var(--success-color);}
+        #setMessageButton { background-color: var(--primary-neon); color: var(--bg-color-dark); box-shadow: 0 0 8px var(--primary-neon);}
+        #likeMessageButton { 
+            background-color: var(--secondary-neon); 
+            color: var(--bg-color-dark); 
+            font-size: 1rem; 
+            border: 1px solid var(--primary-neon);
+            box-shadow: 0 0 8px var(--secondary-neon);
+        }
+        
+        input[type="text"] {
+            padding: 12px; 
+            width: calc(100% - 24px);
+            border: 1px solid var(--secondary-neon);
+            border-radius: 3px; 
+            background-color: rgba(0, 0, 0, 0.8);
+            color: var(--text-color-light);
+            margin-top: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 10px var(--primary-neon);
+            outline: none;
+        }
+        
+        /* Status Display */
+        .status-badge {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-weight: 700;
+            color: var(--bg-color-dark);
+            text-shadow: 0 0 3px white;
+        }
+        #connectionStatus { background-color: var(--error-color); box-shadow: 0 0 5px var(--error-color); }
+        .connected { background-color: var(--success-color) !important; box-shadow: 0 0 5px var(--success-color) !important; }
+        
+        /* Link Styling */
+        .etherscan-link { color: var(--secondary-neon); text-decoration: none; font-weight: 700; font-size: 0.9rem; text-shadow: 0 0 3px var(--secondary-neon);}
+        .etherscan-link:hover { text-decoration: underline; color: white;}
+
+        /* Transaction Log Feedback Enhancement */
+        #transactionResult {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.4); 
+            color: var(--text-color-light);
+            font-size: 0.95rem;
+            border-left: 5px solid var(--primary-neon);
+            box-shadow: 0 0 5px var(--primary-neon) inset; 
+            min-height: 50px; 
+            display: flex;
+            align-items: center;
+        }
+        .tx-success { border-left-color: var(--success-color) !important; color: var(--success-color) !important; font-weight: 700; text-shadow: 0 0 3px var(--success-color) !important;}
+        .tx-error { border-left-color: var(--error-color) !important; color: var(--error-color) !important; font-weight: 700; text-shadow: 0 0 3px var(--error-color) !important;}
+
+        /* 🔥 MOBILE RESPONSIVENESS FIX 🔥 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px; /* Less padding on small screens */
+            }
+            h1 {
+                font-size: 1.8rem; /* Smaller title on mobile */
+                letter-spacing: 1px;
+            }
+            .main-content-grid {
+                grid-template-columns: 1fr; /* Collapse to a single column */
+                gap: 15px; /* Reduce gap */
+            }
+            .metric {
+                min-height: 100px;
+            }
+            .metric-value {
+                font-size: 2rem; /* Smaller metric font */
+            }
+            .section-card {
+                padding: 15px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><< PROTOCOL INTERFACE // SEPOLIA TESTNET >></h1>
+        <p style="text-align: center; color: var(--secondary-neon); margin-bottom: 30px; letter-spacing: 1px;">
+            ::: Decentralized Communication Console :::
+        </p>
+        
+        <div class="section-card">
+            <h2>⚛️ AGENT AUTHORIZATION</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <button id="connectButton">INITIATE CONNECTION</button>
+                    <p style="margin-top: 15px; margin-bottom: 0;">STATUS: <span id="connectionStatus" class="status-badge">DISCONNECTED</span></p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="margin-bottom: 5px;">CONTRACT BEACON: <a id="contractAddressDisplay" class="etherscan-link" target="_blank">VIEW ON ETHERSCAN</a></p>
+                    <p style="margin-top: 0;">AUTHORIZED AGENT: 
+                        <a id="walletAddress" class="etherscan-link" target="_blank">N/A</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content-grid">
+            
+            <div class="section-card">
+                <h2>📜 DATA STREAM (READ)</h2>
+                <span id="currentMessage"> > AWAITING DATA FETCH...</span>
+                <small style="display: block; margin-top: 15px; color: var(--secondary-neon);">LAST TRANSMITTED BY: <a id="lastUpdaterAddress" class="etherscan-link">UNKNOWN</a></small>
+                <button id="readDataButton">PULL LATEST DATA 🟢</button>
+            </div>
+            
+            <div class="section-card">
+                <h2>💾 DATA INJECTION (WRITE)</h2>
+                <h3 style="color: var(--text-color-light); margin-top: 0; font-size: 1.1rem; text-shadow: none;">SET NEW MESSAGE</h3>
+                <input type="text" id="newMessageInput" placeholder="> INPUT MESSAGE (MAX 256 CHARS)...">
+                <button id="setMessageButton">TRANSMIT MESSAGE 🔴</button>
+                
+                <h3 style="color: var(--text-color-light); margin-top: 25px; font-size: 1.1rem; text-shadow: none;">OPERATIONAL FUNDING (PAYABLE)</h3>
+                <button id="likeMessageButton">CONTRIBUTE 0.0001 ETH 🌟</button>
+            </div>
+
+            <div class="section-card">
+                <h2>📈 SYSTEM METRICS</h2>
+                <div class="metric">
+                    <span id="likeCountDisplay" class="metric-value">0</span>
+                    <span class="metric-label">TOTAL LIKES COUNT</span>
+                </div>
+                <div class="metric" style="margin-top: 15px;">
+                    <span id="totalLikesBalanceDisplay" class="metric-value">0.0 ETH</span>
+                    <span class="metric-label">CONTRACT BALANCE</span>
+                </div>
+            </div>
+            
+            <div class="section-card">
+                <h2>📡 EVENT LOG</h2>
+                <p id="transactionResult">...AWAITING AGENT INPUT...</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+         // --- Contract Configuration ---
+const CONTRACT_ADDRESS = "0x0e7770f45c15c9562362d9F8302c64D0f8AD8B1F"; //
+const CONTRACT_ABI = 
+[
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "initialMessage",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "currentMessage",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getLastUpdater",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getLikeCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getMessage",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "lastUpdater",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "likeCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "likeMessage",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_newMessage",
+                "type": "string"
+            }
+        ],
+        "name": "setMessage",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalLikesBalance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+];
+// Sepolia chain details for Etherscan links
+const CHAIN_ID = 11155111; // Sepolia
+const ETHERSCAN_URL = "https://sepolia.etherscan.io";
+const LIKE_AMOUNT_WEI = "100000000000000"; // 0.0001 ETH
+
+// --- Ethers.js and DOM Elements ---
+let provider;
+let signer;
+let contract;
+let currentAccount = null;
+
+const connectButton = document.getElementById('connectButton');
+const readDataButton = document.getElementById('readDataButton');
+const setMessageButton = document.getElementById('setMessageButton');
+const likeMessageButton = document.getElementById('likeMessageButton');
+
+const walletAddressDisplay = document.getElementById('walletAddress');
+const connectionStatusDisplay = document.getElementById('connectionStatus');
+const contractAddressDisplay = document.getElementById('contractAddressDisplay');
+
+const currentMessageDisplay = document.getElementById('currentMessage');
+const lastUpdaterAddressDisplay = document.getElementById('lastUpdaterAddress');
+const likeCountDisplay = document.getElementById('likeCountDisplay');
+const totalLikesBalanceDisplay = document.getElementById('totalLikesBalanceDisplay');
+const newMessageInput = document.getElementById('newMessageInput');
+const transactionResultDisplay = document.getElementById('transactionResult');
+
+// --- Utility Function (Bonus UI Feature: Etherscan Linker) ---
+function getEtherscanLink(type, value) {
+    if (!value || value === 'N/A') return 'N/A';
+    let path = '';
+    if (type === 'address') path = `address/${value}`;
+    if (type === 'tx') path = `tx/${value}`;
+    if (type === 'contract') path = `address/${value}`;
+    
+    return `${ETHERSCAN_URL}/${path}`;
+}
+
+// Function to format addresses for display
+function formatAddress(address) {
+    return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+}
+
+// Initialize Contract Address Link on Load
+contractAddressDisplay.href = getEtherscanLink('contract', CONTRACT_ADDRESS);
+
+// 1. Connect MetaMask Function
+async function connectMetaMask() {
+    console.log("Connect button was clicked! Checking for MetaMask..."); //ADD THIS LINE!
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            // Request account access and get the signer
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            
+            // Set up Ethers providers/signer
+            provider = new ethers.providers.Web3Provider(window.ethereum, "sepolia"); 
+            signer = provider.getSigner();
+            currentAccount = await signer.getAddress();
+
+            // Initialize the contract instance with a signer for write operations
+            contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+            // Update UI status
+            walletAddressDisplay.innerText = formatAddress(currentAccount);
+            walletAddressDisplay.href = getEtherscanLink('address', currentAccount);
+            connectionStatusDisplay.innerText = "Connected";
+            connectionStatusDisplay.classList.add('connected');
+            
+            // Automatically read data after successful connection (Extra UI Feature)
+            readData();
+
+        } catch (error) {
+            console.error("Connection error:", error);
+            connectionStatusDisplay.innerText = "Disconnected / Error";
+            connectionStatusDisplay.classList.remove('connected');
+            alert("Connection failed. Ensure MetaMask is on Sepolia.");
+        }
+    } else {
+        alert("MetaMask is not installed. Please install it to use this dApp.");
+    }
+}
+
+// 2. Read Functions (View/Call)
+async function readData() {
+    if (!contract || !provider) return;
+
+    try {
+        currentMessageDisplay.innerText = "Loading...";
+        
+        // Use Promise.all to fetch all read data concurrently
+        const [message, updater, likeCount, totalBalance] = await Promise.all([
+            contract.getMessage(),
+            contract.getLastUpdater(),
+            contract.getLikeCount(),
+            contract.totalLikesBalance()
+        ]);
+        
+        // Display Message and Updater
+        currentMessageDisplay.innerText = `"${message}"`;
+        lastUpdaterAddressDisplay.innerText = formatAddress(updater);
+        lastUpdaterAddressDisplay.href = getEtherscanLink('address', updater);
+        
+        // Display Bonus Feature Data
+        likeCountDisplay.innerText = likeCount.toString();
+        // Convert Wei to Ether for a readable display
+        totalLikesBalanceDisplay.innerText = ethers.utils.formatEther(totalBalance);
+        
+    } catch (error) {
+        console.error("Error reading contract data:", error);
+        currentMessageDisplay.innerText = "Error reading data. Check console.";
+    }
+}
+
+// 3. Write Function: Set Message
+async function writeMessage() {
+    if (!contract) {
+        alert("Please connect your wallet first.");
+        return;
+    }
+
+    const newMessage = newMessageInput.value;
+    if (!newMessage) {
+        alert("Please enter a message.");
+        return;
+    }
+
+    transactionResultDisplay.innerHTML = `⏳ Awaiting confirmation in MetaMask for **Set Message**...`;
+    transactionResultDisplay.style.color = "orange";
+
+    try {
+        const tx = await contract.setMessage(newMessage);
+        transactionResultDisplay.innerHTML = `⛏ Transaction sent! Waiting for block confirmation... <a href="${getEtherscanLink('tx', tx.hash)}" target="_blank" class="etherscan-link">View Tx on Etherscan</a>`;
+
+        const receipt = await tx.wait(); // Wait for the transaction to be mined
+
+        if (receipt.status === 1) {
+            transactionResultDisplay.innerHTML = `✅ **Transaction Successful!** New message set. <a href="${getEtherscanLink('tx', tx.hash)}" target="_blank" class="etherscan-link">View Tx on Etherscan</a>`;
+            transactionResultDisplay.style.color = "var(--primary-color)";
+            readData(); // Refresh data automatically
+        } else {
+            throw new Error("Transaction failed on-chain (reverted).");
+        }
+
+    } catch (error) {
+        console.error("Transaction failed:", error);
+        transactionResultDisplay.innerHTML = `❌ Transaction failed: ${error.message}`;
+        transactionResultDisplay.style.color = "var(--danger-color)";
+    }
+}
+
+// 4. Write Function: Like Message (Bonus Feature Logic)
+async function likeMessage() {
+    if (!contract) {
+        alert("Please connect your wallet first.");
+        return;
+    }
+
+    transactionResultDisplay.innerHTML = `⏳ Awaiting confirmation in MetaMask for **Like Message** (0.0001 ETH)...`;
+    transactionResultDisplay.style.color = "orange";
+
+    try {
+        // Send the transaction with a value (ETH)
+        const tx = await contract.likeMessage({ value: LIKE_AMOUNT_WEI });
+        
+        transactionResultDisplay.innerHTML = `⛏ Transaction sent! Waiting for block confirmation... <a href="${getEtherscanLink('tx', tx.hash)}" target="_blank" class="etherscan-link">View Tx on Etherscan</a>`;
+
+        const receipt = await tx.wait(); // Wait for the transaction to be mined
+
+        if (receipt.status === 1) {
+            transactionResultDisplay.innerHTML = `👍 **Like Successful!** Thank you for the support. <a href="${getEtherscanLink('tx', tx.hash)}" target="_blank" class="etherscan-link">View Tx on Etherscan</a>`;
+            transactionResultDisplay.style.color = "var(--primary-color)";
+            readData(); // Refresh data automatically
+        } else {
+            throw new Error("Transaction failed on-chain (reverted).");
+        }
+
+    } catch (error) {
+        console.error("Transaction failed:", error);
+        transactionResultDisplay.innerHTML = `❌ Like failed: ${error.message}. Did you approve the transaction in MetaMask?`;
+        transactionResultDisplay.style.color = "var(--danger-color)";
+    }
+}
+
+// --- Event Listeners ---
+connectButton.addEventListener('click', connectMetaMask);
+readDataButton.addEventListener('click', readData);
+setMessageButton.addEventListener('click', writeMessage);
+likeMessageButton.addEventListener('click', likeMessage);
+
+// Handle account/chain changes (Best Practice)
+if (window.ethereum) {
+    window.ethereum.on('accountsChanged', connectMetaMask);
+    window.ethereum.on('chainChanged', connectMetaMask);
+}
+
+// Attempt initial connection on load (Extra UI Feature)
+connectMetaMask();
+
+
+    </script>
+</body>
+</html>
