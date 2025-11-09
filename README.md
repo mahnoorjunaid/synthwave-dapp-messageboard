@@ -58,7 +58,7 @@ Inside the `<script>` section, update:
 ```javascript
 const CONTRACT_ADDRESS = "0x0e7770f45c15c9562362d9F8302c64D0f8AD8B1F"; 
 const CONTRACT_ABI = [
-{
+    {
         "inputs": [
             {
                 "internalType": "string",
@@ -180,9 +180,8 @@ const CONTRACT_ABI = [
         "stateMutability": "view",
         "type": "function"
     }
-
-   ];
-
+];
+```
 
 ### 3. Running the dApp
 
@@ -200,7 +199,7 @@ const CONTRACT_ABI = [
 
 ---
 
-##⚙️ Key Technical Features
+## ⚙️ Key Technical Features
 
 | Feature | Description |
 |---------|-------------|
@@ -210,4 +209,3 @@ const CONTRACT_ABI = [
 | **Sepolia Compatibility** | Fully configured for Sepolia Testnet |
 
 ---
-
